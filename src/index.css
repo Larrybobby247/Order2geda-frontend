@@ -26,3 +26,11 @@ input, select, textarea { transition: border-color .2s, box-shadow .2s, backgrou
 input:focus, select:focus, textarea:focus { outline: none; border-color: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,.18); }
 ::selection { background: #A7F3D0; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } .reveal { opacity: 1; transform: none; } }
+/* modal / bottom-sheet */
+@keyframes sheetUp { from { transform: translateY(100%); opacity: .7; } to { transform: none; opacity: 1; } }
+@keyframes sheetPop { from { transform: scale(.96) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes bdIn { from { opacity: 0; } to { opacity: 1; } }
+.sheet { animation: sheetUp .38s cubic-bezier(.2,.8,.2,1) both; }
+@media (min-width: 640px) { .sheet { animation-name: sheetPop; } }
+.backdrop { animation: bdIn .25s both; }
+.chat-bg { background-color: #022C22; background-image: radial-gradient(600px 300px at 90% 0%, rgba(16,185,129,.18), transparent), radial-gradient(500px 300px at 0% 100%, rgba(251,191,36,.08), transparent); }

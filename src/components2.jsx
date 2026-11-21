@@ -19,7 +19,7 @@ export function ImageUploader({ kind = 'product', onUploaded }) {
       const opt = r.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_600/'); setUrl(opt); onUploaded(opt);
     } catch (x) { setErr(x.message); } finally { setBusy(false); }
   }
-  return (<div className="mt-2"><input type="file" accept="image/*" capture="environment" onChange={pick} className="text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-100 file:text-brand-dark file:px-3 file:py-1.5 file:font-semibold" />{busy && <span className="text-xs ml-2 animate-pulse">Uploading…</span>}
+  return (<div className="mt-2"><input type="file" accept="image/*" onChange={pick} className="text-sm file:mr-3 file:rounded-full file:border-0 file:bg-brand-100 file:text-brand-dark file:px-3 file:py-1.5 file:font-semibold" />{busy && <span className="text-xs ml-2 animate-pulse">Uploading…</span>}
     {url && <div className="mt-2 flex items-center gap-2 animate-pop"><img src={url} alt="Preview" width="64" height="64" loading="lazy" className="w-16 h-16 object-cover rounded-[10px]" /><button type="button" className="text-xs text-red-500" onClick={() => { setUrl(''); onUploaded(undefined); }}>Remove</button></div>}
     {err && <p className="text-xs text-red-500">{err}</p>}</div>);
 }
