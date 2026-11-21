@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Pin, Trash2, Send } from 'lucide-react';
 import { api, socket, naira } from '../api';
 import { ImageUploader } from '../components2';
+import { Progress, StatusChip } from '../ui';
 const Avatar = ({ u }) => u?.profileImage ? <img src={u.profileImage} alt={u.fullName} loading="lazy" className="w-8 h-8 rounded-full object-cover border-2 border-white" /> : <span title={u?.fullName} className="w-8 h-8 rounded-full bg-brand-mint text-brand-dark text-xs font-bold flex items-center justify-center border-2 border-white">{(u?.fullName || '?')[0]}</span>;
 export default function RoomDetails() {
   const { id } = useParams(); const nav = useNavigate(); const qc = useQueryClient(); const end = useRef(null); const lastTyping = useRef(0);
@@ -32,9 +33,9 @@ export default function RoomDetails() {
   const onType = (v) => { setText(v); if (Date.now() - lastTyping.current > 1200) { lastTyping.current = Date.now(); sock?.emit('message:typing', id); } };
   const pinned = msgs.filter((m) => m.pinned);
   return (<div className="space-y-4">
-    <div className="bg-white rounded-card border p-5"><div className="flex justify-between gap-2"><h1 className="font-bold text-xl">{r.name}</h1><span className={`text-xs px-2 py-1 rounded-full h-fit ${open ? 'bg-brand-mint text-brand-dark' : 'bg-amber-100 text-amber-800'}`}>{r.status}</span></div>
+    <div className="bg-white rounded-card border p-5"><div className="flex justify-between gap-2"><h1 className="font-bold text-xl">{r.name}</h1><StatusChip s={r.status} /></div>
       <p className="text-sm text-slate-500">{r.shoppingPlatform} · {r.visibility}</p>
-      <div className="mt-3 h-3 bg-slate-100 rounded-full overflow-hidden"><div className="h-full bg-brand transition-all duration-700" style={{ width: pct + '%' }} /></div>
+      <Progress value={pct} className="mt-3" />
       <p className="text-sm mt-2 num">{naira(r.acceptedProductTotal)} of {naira(r.closingThreshold)} ({pct}%) · target {naira(r.targetAmount)} · {naira(Math.max(0, r.closingThreshold - r.acceptedProductTotal))} to go</p>
       <p className="text-xs text-slate-400 mt-1">The room closes automatically when accepted products reach {naira(r.closingThreshold)} (target + {r.bufferPercentage}% buffer).</p>
       {mem.data && <div className="mt-3 flex items-center"><div className="flex -space-x-2">{mem.data.members.slice(0, 8).map((u) => <Avatar key={u._id} u={u} />)}</div><span className="text-xs text-slate-500 ml-3">{mem.data.members.length} members{mem.data.moderator ? ` · moderator ${mem.data.moderator.fullName}` : ' · no moderator yet'}</span></div>}
