@@ -1,6 +1,10 @@
 import { io } from 'socket.io-client';
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-export const token = { get: () => localStorage.getItem('o2g_token'), set: (t) => localStorage.setItem('o2g_token', t), clear: () => localStorage.removeItem('o2g_token') };
+export const token = {
+  get: () => localStorage.getItem('o2g_token') || sessionStorage.getItem('o2g_token'),
+  set: (t, remember = true) => { localStorage.removeItem('o2g_token'); sessionStorage.removeItem('o2g_token'); (remember ? localStorage : sessionStorage).setItem('o2g_token', t); },
+  clear: () => { localStorage.removeItem('o2g_token'); sessionStorage.removeItem('o2g_token'); },
+};
 export async function api(path, { method = 'GET', body } = {}) {
   const res = await fetch(API + path, { method, headers: { 'Content-Type': 'application/json', ...(token.get() && { Authorization: `Bearer ${token.get()}` }) }, body: body && JSON.stringify(body) });
   const data = await res.json().catch(() => ({}));
