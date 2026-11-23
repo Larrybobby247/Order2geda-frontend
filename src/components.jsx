@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link, NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Home, Search, Plus, ShoppingBag, User, Bell, Users, ArrowRight, MailWarning } from 'lucide-react';
+import { Home, Search, Plus, ShoppingBag, User, Bell, Users, ArrowRight, MailWarning, MapPin } from 'lucide-react';
 import { api, token, naira, socket } from './api';
 import { Progress, StatusChip } from './ui';
 export { Skeleton, Empty } from './ui';
@@ -14,7 +14,7 @@ export function RoomCard({ room, unread }) {
     <div className={`h-24 bg-gradient-to-br ${cover} relative overflow-hidden`}><span className="absolute inset-0 bg-grid opacity-60" /><span className="absolute -right-3 -bottom-4 text-6xl opacity-90 group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500">{EMOJI[room.category] || '🛍️'}</span>
       <div className="absolute top-3 left-3 flex gap-2"><span className="text-[11px] font-bold bg-white/90 text-brand-dark px-2.5 py-1 rounded-full">{room.shoppingPlatform}</span><StatusChip s={room.status} /></div>
       {unread > 0 && <span className="absolute top-3 right-3 bg-brand-gold text-brand-deep text-xs font-bold rounded-full px-2 py-0.5 animate-pop">{unread} new</span>}</div>
-    <div className="p-4"><h3 className="font-bold leading-snug line-clamp-1">{room.name}</h3>
+    <div className="p-4"><div className="flex items-start justify-between gap-2"><h3 className="font-bold leading-snug line-clamp-1">{room.name}</h3>{room.match && <span className={`shrink-0 text-[10px] font-bold px-2 py-0.5 rounded-full ${room.match === 'area' ? 'bg-brand text-white' : 'bg-brand-100 text-brand-700'}`}>{room.match === 'area' ? 'In your area' : 'In your state'}</span>}</div>{room.state && <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1"><MapPin size={12} />{[room.area, room.state].filter(Boolean).join(', ')}</p>}
       <div className="mt-3 flex justify-between text-xs text-slate-500 num"><span><b className="text-ink text-sm">{naira(room.acceptedProductTotal)}</b> of {naira(room.closingThreshold)}</span><b className="text-brand-700">{pct}%</b></div><Progress value={pct} className="mt-1.5" />
       <div className="mt-3 flex items-center justify-between text-xs text-slate-500"><span className="inline-flex items-center gap-1"><Users size={14} />{room.participantCount ?? '—'} members</span><span className="num">{room.status === 'OPEN' ? `${naira(left)} to go` : 'Closed'}</span></div>
       <p className="mt-2 text-xs font-semibold text-brand inline-flex items-center gap-1 group-hover:gap-2 transition-all">{room.status === 'OPEN' ? 'View & join' : 'View room'} <ArrowRight size={13} /></p></div></Link>);
