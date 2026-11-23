@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { api, naira } from '../api';
@@ -16,7 +17,7 @@ export function AdminDashboard() {
   const rev = (an.data?.revenue || []).map((r) => ({ d: r._id.slice(5), amount: r.amount / 100, commission: r.commission / 100 }));
   const st = (rows) => (rows || []).map((r) => ({ s: r._id, n: r.n }));
   return (<div className="space-y-4"><div className="flex justify-between items-center"><h1 className="text-xl font-bold">Overview</h1><select value={days} onChange={(e) => setDays(Number(e.target.value))} className="border rounded p-2 text-sm"><option value={7}>Last 7 days</option><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option></select></div>
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3"><Card label="Customers" value={data.customers} /><Card label="Active rooms" value={data.activeRooms} /><Card label="Orders" value={data.orders} /><Card label="Product value" value={naira(data.gross)} /><Card label="Commission" value={naira(data.commission)} /><Card label="Pending refunds" value={data.pendingRefunds} /></div>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3"><Card label="Customers" value={data.customers} /><Card label="Active rooms" value={data.activeRooms} /><Card label="Orders" value={data.orders} /><Card label="Product value" value={naira(data.gross)} /><Card label="Commission" value={naira(data.commission)} /><Card label="Pending refunds" value={data.pendingRefunds} /><Card label="Shipping received" value={naira(data.shippingReceived || 0)} /><Card label="Shipping outstanding" value={naira(data.shippingOutstanding || 0)} /></div>
     {!an.data ? <Skeleton /> : <div className="grid md:grid-cols-2 gap-3">
       <Chart title="Revenue & commission (₦)"><BarChart data={rev}><XAxis dataKey="d" fontSize={11} /><YAxis fontSize={11} /><Tooltip /><Bar dataKey="amount" fill="#064E3B" radius={[6, 6, 0, 0]} /><Bar dataKey="commission" fill="#10B981" radius={[6, 6, 0, 0]} /></BarChart></Chart>
       <Chart title="Orders over time">{bars(day(an.data.orders, 'n'))}</Chart><Chart title="New customers">{bars(day(an.data.signups, 'n'))}</Chart>
@@ -116,5 +117,5 @@ export function AdminRooms() {
   const status = (id, s) => { const reason = prompt(`Reason to mark room ${s} (min 5 chars)`); reason && run(() => api(`/admin/rooms/${id}/status`, { method: 'POST', body: { status: s, reason } })); };
   if (error) return <Err e={error} />; if (!data) return <Skeleton />;
   return (<div><h1 className="text-xl font-bold mb-3">Rooms</h1>{msg && <p className="text-sm mb-2">{msg}</p>}{data.map((r) => <div key={r._id} className="bg-white border rounded-[14px] p-3 mb-2 text-sm"><div className="flex justify-between"><b>{r.name}</b><span>{r.visibility} · {r.status}</span></div><div className="text-slate-500 num">{naira(r.acceptedProductTotal)} / {naira(r.closingThreshold)} · {r.participants.length} members</div>
-    <div className="flex gap-2 mt-2"><button className={`${btn} border`} onClick={() => shipping(r._id)}>Allocate shipping</button>{['OPEN', 'CLOSED'].includes(r.status) && <><button className={`${btn} border`} onClick={() => status(r._id, 'CLOSED')}>Close</button><button className={`${btn} border text-red-600`} onClick={() => status(r._id, 'CANCELLED')}>Cancel</button></>}</div></div>)}</div>);
+    <div className="flex gap-2 mt-2">{['CLOSED', 'PROCESSING', 'COMPLETED'].includes(r.status) && <Link className={`${btn} border`} to={`/admin/rooms/${r._id}/shipping`}>Shipping</Link>}{['OPEN', 'CLOSED'].includes(r.status) && <><button className={`${btn} border`} onClick={() => status(r._id, 'CLOSED')}>Close</button><button className={`${btn} border text-red-600`} onClick={() => status(r._id, 'CANCELLED')}>Cancel</button></>}</div></div>)}</div>);
 }
